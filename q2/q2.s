@@ -13,6 +13,10 @@ mv s2, a1
 slli a0, a0, 2
 call malloc
 mv s3, a0
+mv a0, s1
+slli a0, a0, 2
+call malloc
+mv s5, a0
 li s4, 1
 input:
 beq s4, s1, stop
@@ -29,38 +33,43 @@ stop:
 
 addi s4, s4, -1
 stack:
-beq s4, x0, out
+beq s4, x0, done
 slli a2, s4, 2
 add t0, a2, s3
 lw a3, 0(t0)
 inner:
 beq sp, s0, big
 lw a4, 0(sp)
+addi a4, a4, 1
+slli a4, a4, 2
+add t0, a4, s3
+lw a4, 0(t0)
 bgt a4, a3, big
 addi sp, sp, 4
+beq x0, x0, inner
 big:
 beq sp, s0, st_1
 lw a4, 0(sp)
-add t0, a2, s3
+add t0, a2, s5
 sw a4, 0(t0)
 beq x0, x0, add_to_stack
 st_1:
 li a4, -1
-add t0, a2, s3
+add t0, a2, s5
 sw a4, 0(t0)
 add_to_stack:
 addi sp, sp, -4
-sw a3, 0(sp)
 addi s4, s4, -1
+sw s4, 0(sp)
 beq x0, x0, stack
-out:
+done:
 addi sp, s0, 0
 
 li s4, 1
 output:
 beq s4, s1, end
 slli a2, s4, 2
-add t0, a2, s3
+add t0, a2, s5
 lw a1, 0(t0)
 lla a0, fmt
 call printf
